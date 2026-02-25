@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мое PWA приложение с БД</title>
+    
+    <!-- Подключаем манифест (обязательно для PWA) -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Иконка для iOS (обязательно!) -->
+    <link rel="apple-touch-icon" href="images/icon-180.png">
+    
+    <!-- Для старых браузеров -->
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+    
+    <!-- Цвет темы для браузера -->
+    <meta name="theme-color" content="#000000">
+    
+    <!-- Подключаем стили -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Мое приложение с базой данных</h1>
+        
+        <!-- Форма для добавления данных -->
+        <div class="add-section">
+            <input type="text" id="itemName" placeholder="Введите название">
+            <input type="text" id="itemValue" placeholder="Введите значение">
+            <button onclick="addItem()">Добавить</button>
+        </div>
+        
+        <!-- Список элементов из базы данных -->
+        <div class="items-section">
+            <h2>Сохраненные элементы:</h2>
+            <ul id="itemsList"></ul>
+        </div>
+    </div>
+    
+    <!-- Подключаем JavaScript -->
+    <script src="app.js"></script>
+</body>
+</html>
