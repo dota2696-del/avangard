@@ -8,8 +8,9 @@ request.onsuccess = function(event) {
     db = event.target.result;
     console.log("База данных открыта");
     
-    // Загружаем элементы если есть сессия
-    if (localStorage.getItem('currentSession')) {
+    // Если мы на index.html и есть сессия, загружаем элементы
+    if (window.location.pathname.includes('index.html') && 
+        localStorage.getItem('currentSession')) {
         loadItems();
     }
 };
