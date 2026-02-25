@@ -14,19 +14,28 @@ class SheetsTable {
         ];
         this.editingRow = null;
         this.editValues = {};
+        
+        // Сразу инициализируем
         this.init();
     }
 
     init() {
+        console.log("Инициализация таблицы...");
         this.render();
         this.loadData();
     }
 
     async loadData() {
+        console.log("Загрузка данных...");
+        
         const sessionData = localStorage.getItem('currentSession');
-        if (!sessionData) return;
+        if (!sessionData) {
+            console.log("Нет сессии");
+            return;
+        }
 
         const session = JSON.parse(sessionData);
+        document.getElementById('welcomeMessage').textContent = `Пользователь #${session.userId}`;
         
         try {
             const db = await this.getDB();
@@ -40,6 +49,7 @@ class SheetsTable {
                     date: item.date ? new Date(item.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
                     completed: item.completed || false
                 }));
+                console.log("Загружено записей:", this.data.length);
                 this.renderTable();
                 this.updateStats();
             };
@@ -58,7 +68,10 @@ class SheetsTable {
 
     render() {
         const container = document.getElementById('sheetsContainer');
-        if (!container) return;
+        if (!container) {
+            console.error("Контейнер sheetsContainer не найден!");
+            return;
+        }
 
         container.innerHTML = `
             <div class="sheets-container">
@@ -106,16 +119,13 @@ class SheetsTable {
                 </div>
             </div>
 
-            <!-- Модальное окно для добавления/редактирования -->
             <div class="modal" id="sheetModal">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h3 id="modalTitle">Добавить запись</h3>
                         <button class="close-btn" onclick="sheets.closeModal()">×</button>
                     </div>
-                    <div class="modal-body" id="modalBody">
-                        <!-- Динамически заполняется -->
-                    </div>
+                    <div class="modal-body" id="modalBody"></div>
                     <div class="modal-footer">
                         <button onclick="sheets.closeModal()">Отмена</button>
                         <button onclick="sheets.saveRow()" class="primary">Сохранить</button>
@@ -123,6 +133,8 @@ class SheetsTable {
                 </div>
             </div>
         `;
+        
+        console.log("Таблица отрисована");
     }
 
     renderTable() {
@@ -133,7 +145,7 @@ class SheetsTable {
             tbody.innerHTML = `
                 <tr>
                     <td colspan="${this.columns.length + 1}" style="text-align: center; padding: 20px;">
-                        Нет данных. Нажмите "Добавить строку" для создания первой записи.
+                        📭 Нет данных. Нажмите "Добавить строку" для создания первой записи.
                     </td>
                 </tr>
             `;
@@ -154,16 +166,16 @@ class SheetsTable {
                     let value = item[col.field];
                     
                     if (col.type === 'checkbox') {
-                        value = value ? '✓' : '✗';
+                        value = value ? '✅' : '❌';
                     } else if (col.field === 'date' && value) {
                         value = new Date(value).toLocaleDateString('ru-RU');
                     }
                     
-                    return `<td class="editable-cell" ondblclick="sheets.editCell(${item.id}, '${col.field}')">${value || '-'}</td>`;
+                    return `<td class="editable-cell" ondblclick="sheets.editCell(${item.id}, '${col.field}')">${value || '—'}</td>`;
                 }).join('')}
                 <td class="actions-cell">
-                    <button class="edit-btn" onclick="sheets.editRow(${item.id})">✏️</button>
-                    <button class="delete-btn" onclick="sheets.deleteRow(${item.id})">🗑️</button>
+                    <button class="edit-btn" onclick="sheets.editRow(${item.id})" title="Редактировать">✏️</button>
+                    <button class="delete-btn" onclick="sheets.deleteRow(${item.id})" title="Удалить">🗑️</button>
                 </td>
             </tr>
         `;
@@ -218,8 +230,8 @@ class SheetsTable {
                     }
                 }).join('')}
                 <td class="actions-cell">
-                    <button class="save-btn" onclick="sheets.saveEdit(${item.id})">💾</button>
-                    <button class="cancel-btn" onclick="sheets.cancelEdit()">✖️</button>
+                    <button class="save-btn" onclick="sheets.saveEdit(${item.id})" title="Сохранить">💾</button>
+                    <button class="cancel-btn" onclick="sheets.cancelEdit()" title="Отмена">✖️</button>
                 </td>
             </tr>
         `;
@@ -271,7 +283,10 @@ class SheetsTable {
         }
 
         const session = JSON.parse(sessionData);
-        const newItem = { userId: session.userId, timestamp: Date.now() };
+        const newItem = { 
+            userId: session.userId, 
+            timestamp: Date.now() 
+        };
 
         this.columns
             .filter(col => !col.readonly)
@@ -297,6 +312,7 @@ class SheetsTable {
             const store = transaction.objectStore("items");
             
             store.add(item).onsuccess = () => {
+                console.log("Запись добавлена");
                 this.loadData();
             };
         } catch (error) {
@@ -361,6 +377,7 @@ class SheetsTable {
         this.getDB().then(db => {
             const transaction = db.transaction(["items"], "readwrite");
             transaction.objectStore("items").delete(id).onsuccess = () => {
+                console.log("Запись удалена");
                 this.loadData();
             };
         });
@@ -380,14 +397,20 @@ class SheetsTable {
 
         const headers = this.columns.map(col => col.title).join(',');
         const rows = this.data.map(item => 
-            this.columns.map(col => `"${item[col.field] || ''}"`).join(',')
+            this.columns.map(col => {
+                let value = item[col.field] || '';
+                if (col.type === 'checkbox') {
+                    value = value ? 'Да' : 'Нет';
+                }
+                return `"${value}"`;
+            }).join(',')
         ).join('\n');
 
         const csv = `${headers}\n${rows}`;
         const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
-        link.download = `sheets_export_${new Date().toISOString().split('T')[0]}.csv`;
+        link.download = `sheets_${new Date().toISOString().split('T')[0]}.csv`;
         link.click();
     }
 
@@ -413,11 +436,14 @@ class SheetsTable {
         });
 
         const stats = [
+            `📊 Статистика:`,
+            `━━━━━━━━━━━━━━━━`,
             `Всего записей: ${total}`,
-            `Выполнено: ${completed}`,
-            `Осталось: ${total - completed}`,
-            '\nПо категориям:',
-            ...Object.entries(categories).map(([cat, count]) => `  ${cat}: ${count}`)
+            `✅ Выполнено: ${completed}`,
+            `⭕ Осталось: ${total - completed}`,
+            `━━━━━━━━━━━━━━━━`,
+            `По категориям:`,
+            ...Object.entries(categories).map(([cat, count]) => `  • ${cat}: ${count}`)
         ].join('\n');
 
         alert(stats);
@@ -432,10 +458,18 @@ class SheetsTable {
     }
 }
 
-// Инициализация таблицы
+// Глобальная переменная
 let sheets;
+
+// Инициализация после загрузки DOM
 document.addEventListener('DOMContentLoaded', () => {
+    console.log("DOM загружен, ищем контейнер...");
     if (document.getElementById('sheetsContainer')) {
+        console.log("Контейнер найден, создаем таблицу");
         sheets = new SheetsTable();
+    } else {
+        console.error("Контейнер sheetsContainer не найден!");
+    }
+});
     }
 });
