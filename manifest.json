@@ -1,8 +1,8 @@
 {
-  "name": "Мое приложение с базой данных",
+  "name": "Моё приложение с базой данных",
   "short_name": "МояБД",
   "description": "Приложение для работы с базой данных на телефоне",
-  "start_url": "/login.html",  // Изменено с "/" на "/login.html"
+  "start_url": "/login.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000",
