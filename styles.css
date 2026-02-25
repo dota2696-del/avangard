@@ -189,4 +189,18 @@ li:last-child {
 
 .auth-links a:hover {
     text-decoration: underline;
+
+}
+
+.empty-message {
+    text-align: center;
+    color: #999;
+    font-style: italic;
+    padding: 20px !important;
+    justify-content: center !important;
+}
+
+.item-content {
+    flex: 1;
+    word-break: break-word;
 }
