@@ -12,7 +12,7 @@ body {
 }
 
 .container {
-    max-width: 800px;
+    max-width: 1200px;
     margin: 0 auto;
     background: white;
     border-radius: 20px;
@@ -20,187 +20,118 @@ body {
     box-shadow: 0 20px 60px rgba(0,0,0,0.3);
 }
 
-h1 {
-    color: #333;
-    margin-bottom: 30px;
-    text-align: center;
-    font-size: 28px;
-}
-
-h2 {
-    color: #555;
-    margin-bottom: 20px;
-    font-size: 20px;
-}
-
-.add-section {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 30px;
-    flex-wrap: wrap;
-}
-
-input {
-    flex: 1;
-    padding: 12px 15px;
-    border: 2px solid #e0e0e0;
-    border-radius: 10px;
-    font-size: 16px;
-    transition: border-color 0.3s;
-}
-
-input:focus {
-    outline: none;
-    border-color: #667eea;
-}
-
-button {
-    padding: 12px 25px;
-    background: #667eea;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: transform 0.2s, background 0.2s;
-}
-
-button:hover {
-    background: #5a67d8;
-    transform: translateY(-2px);
-}
-
-.items-section {
-    background: #f8f9fa;
-    border-radius: 15px;
-    padding: 20px;
-}
-
-ul {
-    list-style: none;
-}
-
-li {
-    padding: 15px;
-    background: white;
-    border-radius: 10px;
-    margin-bottom: 10px;
+/* Новые стили для шапки */
+.user-info {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #667eea10 0%, #764ba210 100%);
+    border-radius: 12px;
+    border: 1px solid #e0e0e0;
 }
 
-li:last-child {
-    margin-bottom: 0;
+.user-greeting {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.delete-btn {
+.welcome-emoji {
+    font-size: 24px;
+}
+
+#welcomeMessage {
+    font-weight: 500;
+    color: #333;
+    font-size: 16px;
+}
+
+.logout-btn {
     background: #f56565;
-    padding: 5px 15px;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 8px;
+    cursor: pointer;
     font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
-.delete-btn:hover {
+.logout-btn:hover {
     background: #e53e3e;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(229, 62, 62, 0.3);
 }
 
-/* Адаптация для мобильных устройств */
+/* Новые стили для заголовка */
+.app-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.app-header h1 {
+    color: #333;
+    font-size: 32px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.header-icon {
+    font-size: 40px;
+}
+
+.subtitle {
+    color: #666;
+    font-size: 16px;
+}
+
+/* Новые стили для подвала */
+.app-footer {
+    margin-top: 30px;
+    text-align: center;
+    padding: 20px;
+    color: #999;
+    font-size: 14px;
+    border-top: 1px solid #e0e0e0;
+}
+
+/* Убираем старые стили для add-section и items-section */
+.add-section,
+.items-section {
+    display: none;
+}
+
+/* Адаптация для мобильных */
 @media (max-width: 600px) {
     .container {
-        padding: 20px;
+        padding: 15px;
     }
     
-    .add-section {
-        flex-direction: column;
+    .app-header h1 {
+        font-size: 24px;
     }
     
-    button {
-        width: 100%;
+    .header-icon {
+        font-size: 30px;
     }
     
-    li {
+    .user-info {
         flex-direction: column;
         gap: 10px;
         text-align: center;
     }
-}
-
-/* Добавьте в конец файла styles.css */
-
-/* Стили для форм авторизации */
-.auth-section {
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-.form-group {
-    margin-bottom: 15px;
-}
-
-.form-group input {
-    width: 100%;
-    padding: 12px 15px;
-    border: 2px solid #e0e0e0;
-    border-radius: 10px;
-    font-size: 16px;
-    transition: border-color 0.3s;
-}
-
-.form-group input:focus {
-    outline: none;
-    border-color: #667eea;
-}
-
-.btn-primary {
-    width: 100%;
-    padding: 12px;
-    background: #667eea;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: transform 0.2s, background 0.2s;
-    margin-top: 10px;
-}
-
-.btn-primary:hover {
-    background: #5a67d8;
-    transform: translateY(-2px);
-}
-
-.auth-links {
-    text-align: center;
-    margin-top: 20px;
-}
-
-.auth-links p {
-    margin: 10px 0;
-    color: #666;
-}
-
-.auth-links a {
-    color: #667eea;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.auth-links a:hover {
-    text-decoration: underline;
-
-}
-
-.empty-message {
-    text-align: center;
-    color: #999;
-    font-style: italic;
-    padding: 20px !important;
-    justify-content: center !important;
-}
-
-.item-content {
-    flex: 1;
-    word-break: break-word;
+    
+    .logout-btn {
+        width: 100%;
+        justify-content: center;
+    }
 }
