@@ -2,12 +2,13 @@ console.log("app.js загружается...");
 
 let db;
 
-// Используем ту же версию 3
+// ИСПРАВЛЕНО: используем версию 3, чтобы соответствовать существующей базе
 const request = indexedDB.open("MyDatabase", 3);
 
 request.onsuccess = function(event) {
     db = event.target.result;
     console.log("База данных открыта, версия:", db.version);
+    console.log("Доступные хранилища:", Array.from(db.objectStoreNames));
     
     // Если мы на index.html и есть сессия, загружаем элементы
     if (window.location.pathname.includes('index.html') && 
@@ -79,7 +80,7 @@ function displayItems(items) {
     list.innerHTML = '';
     
     if (items.length === 0) {
-        list.innerHTML = '<li>Нет элементов</li>';
+        list.innerHTML = '<li class="empty-message">Нет сохранённых элементов</li>';
         return;
     }
     
@@ -88,7 +89,9 @@ function displayItems(items) {
     items.forEach(item => {
         const li = document.createElement('li');
         li.innerHTML = `
-            <strong>${escapeHtml(item.name)}</strong>: ${escapeHtml(item.value)}
+            <div class="item-content">
+                <strong>${escapeHtml(item.name)}</strong>: ${escapeHtml(item.value)}
+            </div>
             <button onclick="deleteItem(${item.id})" class="delete-btn">Удалить</button>
         `;
         list.appendChild(li);
@@ -97,8 +100,11 @@ function displayItems(items) {
 
 // Удаление элемента
 window.deleteItem = function(id) {
+    if (!confirm('Удалить этот элемент?')) return;
+    
     const transaction = db.transaction(["items"], "readwrite");
     transaction.objectStore("items").delete(id).onsuccess = function() {
+        console.log("Элемент удалён");
         loadItems();
     };
 };
