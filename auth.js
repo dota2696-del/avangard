@@ -1,9 +1,3 @@
-// База данных для авторизации
-const AUTH_DB = {
-    USERS_STORE: "users",
-    SESSION_STORE: "sessions"
-};
-
 // Инициализация БД для авторизации
 function initAuthDB() {
     return new Promise((resolve, reject) => {
@@ -13,8 +7,8 @@ function initAuthDB() {
             const db = event.target.result;
             console.log("Обновление базы данных auth...");
             
-            if (!db.objectStoreNames.contains(AUTH_DB.USERS_STORE)) {
-                const userStore = db.createObjectStore(AUTH_DB.USERS_STORE, {
+            if (!db.objectStoreNames.contains("users")) {
+                const userStore = db.createObjectStore("users", {
                     keyPath: "id",
                     autoIncrement: true
                 });
@@ -23,8 +17,8 @@ function initAuthDB() {
                 console.log("Хранилище users создано");
             }
             
-            if (!db.objectStoreNames.contains(AUTH_DB.SESSION_STORE)) {
-                const sessionStore = db.createObjectStore(AUTH_DB.SESSION_STORE, {
+            if (!db.objectStoreNames.contains("sessions")) {
+                const sessionStore = db.createObjectStore("sessions", {
                     keyPath: "sessionId",
                     autoIncrement: true
                 });
@@ -71,8 +65,8 @@ window.registerUser = async function() {
     
     try {
         const db = await initAuthDB();
-        const transaction = db.transaction([AUTH_DB.USERS_STORE], "readwrite");
-        const userStore = transaction.objectStore(AUTH_DB.USERS_STORE);
+        const transaction = db.transaction(["users"], "readwrite");
+        const userStore = transaction.objectStore("users");
         
         // Проверяем существование пользователя
         const usernameIndex = userStore.index("username");
@@ -90,7 +84,7 @@ window.registerUser = async function() {
         const user = {
             username: username,
             email: email,
-            password: btoa(password), // Простое кодирование (не для продакшена!)
+            password: btoa(password),
             timestamp: new Date().getTime()
         };
         
@@ -121,8 +115,8 @@ window.loginUser = async function() {
     
     try {
         const db = await initAuthDB();
-        const transaction = db.transaction([AUTH_DB.USERS_STORE], "readonly");
-        const userStore = transaction.objectStore(AUTH_DB.USERS_STORE);
+        const transaction = db.transaction(["users"], "readonly");
+        const userStore = transaction.objectStore("users");
         
         // Ищем по username
         const usernameIndex = userStore.index("username");
@@ -170,13 +164,13 @@ window.loginUser = async function() {
 // Создание сессии
 async function createSession(userId) {
     const db = await initAuthDB();
-    const transaction = db.transaction([AUTH_DB.SESSION_STORE], "readwrite");
-    const sessionStore = transaction.objectStore(AUTH_DB.SESSION_STORE);
+    const transaction = db.transaction(["sessions"], "readwrite");
+    const sessionStore = transaction.objectStore("sessions");
     
     const session = {
         userId: userId,
         timestamp: new Date().getTime(),
-        expires: new Date().getTime() + (24 * 60 * 60 * 1000) // 24 часа
+        expires: new Date().getTime() + (24 * 60 * 60 * 1000)
     };
     
     const addRequest = sessionStore.add(session);
@@ -202,8 +196,8 @@ window.checkAuth = async function() {
     try {
         const session = JSON.parse(sessionData);
         const db = await initAuthDB();
-        const transaction = db.transaction([AUTH_DB.SESSION_STORE], "readonly");
-        const sessionStore = transaction.objectStore(AUTH_DB.SESSION_STORE);
+        const transaction = db.transaction(["sessions"], "readonly");
+        const sessionStore = transaction.objectStore("sessions");
         
         const sessionRequest = sessionStore.get(session.sessionId);
         
@@ -237,12 +231,7 @@ window.checkAuth = async function() {
 window.logout = function() {
     console.log("Выход из системы");
     localStorage.removeItem('currentSession');
-    
-    // Если мы не на странице входа, перенаправляем
-    if (!window.location.pathname.includes('login.html') && 
-        !window.location.pathname.includes('register.html')) {
-        window.location.href = 'login.html';
-    }
+    window.location.href = 'login.html';
 };
 
 // Проверяем авторизацию при загрузке страницы
@@ -250,7 +239,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     console.log("Auth.js: страница загружена");
     
     // Если мы на главной странице
-    if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/') {
+    const path = window.location.pathname;
+    if (path.endsWith('index.html') || path === '/' || path === '') {
         const isAuth = await window.checkAuth();
         if (!isAuth) {
             window.location.href = 'login.html';
