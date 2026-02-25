@@ -3,48 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мое PWA приложение с БД</title>
-    
-    <!-- Подключаем манифест (обязательно для PWA) -->
+    <title>Моё PWA приложение</title>
     <link rel="manifest" href="manifest.json">
-    
-    <!-- Иконка для iOS (обязательно!) -->
     <link rel="apple-touch-icon" href="images/icon-180.png">
-    
-    <!-- Для старых браузеров -->
     <link rel="icon" href="images/favicon.ico" type="image/x-icon">
-    
-    <!-- Цвет темы для браузера -->
     <meta name="theme-color" content="#000000">
-    
-    <!-- Подключаем стили -->
     <link rel="stylesheet" href="styles.css">
+    
+    <!-- СНАЧАЛА ПРОВЕРЯЕМ АВТОРИЗАЦИЮ -->
+    <script>
+        // Этот скрипт выполняется до загрузки страницы
+        (function() {
+            console.log("Проверка авторизации...");
+            const session = localStorage.getItem('currentSession');
+            if (!session) {
+                console.log("Нет сессии, перенаправляем на login.html");
+                window.location.href = 'login.html';
+            }
+        })();
+    </script>
 </head>
 <body>
     <div class="container">
-        <!-- Блок с информацией о пользователе (ДОБАВЛЕН В НУЖНОЕ МЕСТО) -->
         <div class="user-info">
             <span id="welcomeMessage">Добро пожаловать!</span>
             <button onclick="logout()" class="logout-btn">Выйти</button>
         </div>
         
-        <h1>Мое приложение с базой данных</h1>
+        <h1>Моё приложение с базой данных</h1>
         
-        <!-- Форма для добавления данных -->
         <div class="add-section">
             <input type="text" id="itemName" placeholder="Введите название">
             <input type="text" id="itemValue" placeholder="Введите значение">
-            <button onclick="addItem()">Добавить</button>
+            <button onclick="addItem()" class="add-btn">Добавить</button>
         </div>
         
-        <!-- Список элементов из базы данных -->
         <div class="items-section">
-            <h2>Сохраненные элементы:</h2>
+            <h2>Сохранённые элементы:</h2>
             <ul id="itemsList"></ul>
         </div>
     </div>
-    
-    <!-- Подключаем JavaScript -->
+
     <script src="app.js"></script>
     <script src="auth.js"></script>
 </body>
