@@ -1,41 +1,25 @@
-// Глобальная переменная для базы данных
+console.log("app.js загружается...");
+
 let db;
 
-// Открываем базу данных
-const request = indexedDB.open("MyDatabase", 2);
-
-request.onupgradeneeded = function(event) {
-    const db = event.target.result;
-    console.log("Обновление базы данных...");
-    
-    if (!db.objectStoreNames.contains("items")) {
-        const objectStore = db.createObjectStore("items", { 
-            keyPath: "id", 
-            autoIncrement: true 
-        });
-        
-        objectStore.createIndex("name", "name", { unique: false });
-        objectStore.createIndex("value", "value", { unique: false });
-        objectStore.createIndex("timestamp", "timestamp", { unique: false });
-        objectStore.createIndex("userId", "userId", { unique: false });
-        
-        console.log("Хранилище items создано!");
-    }
-};
+const request = indexedDB.open("MyDatabase", 1);
 
 request.onsuccess = function(event) {
     db = event.target.result;
-    console.log("База данных открыта успешно!");
+    console.log("База данных открыта");
+    
+    // Загружаем элементы если есть сессия
+    if (localStorage.getItem('currentSession')) {
+        loadItems();
+    }
 };
 
 request.onerror = function(event) {
-    console.error("Ошибка при открытии базы данных:", event.target.error);
+    console.error("Ошибка:", event.target.error);
 };
 
-// Функция для добавления элемента
+// Добавление элемента
 window.addItem = function() {
-    console.log("Функция addItem вызвана!");
-    
     const sessionData = localStorage.getItem('currentSession');
     if (!sessionData) {
         alert('Необходимо войти в систему');
@@ -51,71 +35,49 @@ window.addItem = function() {
     const value = valueInput.value.trim();
     
     if (!name || !value) {
-        alert('Пожалуйста, заполните оба поля');
+        alert('Заполните все поля');
         return;
     }
     
     const transaction = db.transaction(["items"], "readwrite");
-    const objectStore = transaction.objectStore("items");
+    const store = transaction.objectStore("items");
     
-    const item = {
+    store.add({
         name: name,
         value: value,
         userId: session.userId,
-        timestamp: new Date().getTime()
-    };
-    
-    const addRequest = objectStore.add(item);
-    
-    addRequest.onsuccess = function() {
-        console.log("Элемент добавлен!");
+        timestamp: Date.now()
+    }).onsuccess = function() {
         nameInput.value = '';
         valueInput.value = '';
         loadItems();
     };
+};
+
+// Загрузка элементов
+window.loadItems = function() {
+    const sessionData = localStorage.getItem('currentSession');
+    if (!sessionData) return;
     
-    addRequest.onerror = function(event) {
-        console.error("Ошибка при добавлении:", event.target.error);
+    const session = JSON.parse(sessionData);
+    const transaction = db.transaction(["items"], "readonly");
+    const store = transaction.objectStore("items");
+    const index = store.index("userId");
+    
+    index.getAll(session.userId).onsuccess = function(event) {
+        displayItems(event.target.result);
     };
 };
 
-// Функция для загрузки элементов
-window.loadItems = function() {
-    console.log("Загрузка элементов...");
-    
-    const sessionData = localStorage.getItem('currentSession');
-    if (!sessionData) {
-        console.log("Нет сессии");
-        return;
-    }
-    
-    try {
-        const session = JSON.parse(sessionData);
-        const transaction = db.transaction(["items"], "readonly");
-        const objectStore = transaction.objectStore("items");
-        const index = objectStore.index("userId");
-        
-        const getAllRequest = index.getAll(session.userId);
-        
-        getAllRequest.onsuccess = function() {
-            const items = getAllRequest.result;
-            console.log("Загружено элементов:", items.length);
-            displayItems(items);
-        };
-    } catch (error) {
-        console.error("Ошибка загрузки:", error);
-    }
-};
-
-// Функция для отображения элементов
+// Отображение элементов
 function displayItems(items) {
-    const itemsList = document.getElementById('itemsList');
-    if (!itemsList) return;
+    const list = document.getElementById('itemsList');
+    if (!list) return;
     
-    itemsList.innerHTML = '';
+    list.innerHTML = '';
     
     if (items.length === 0) {
-        itemsList.innerHTML = '<li>Пока нет сохранённых элементов</li>';
+        list.innerHTML = '<li>Нет элементов</li>';
         return;
     }
     
@@ -124,37 +86,19 @@ function displayItems(items) {
     items.forEach(item => {
         const li = document.createElement('li');
         li.innerHTML = `
-            <strong>${escapeHtml(item.name)}</strong>: ${escapeHtml(item.value)}
-            <button onclick="window.deleteItem(${item.id})" class="delete-btn">Удалить</button>
+            <strong>${item.name}</strong>: ${item.value}
+            <button onclick="deleteItem(${item.id})" class="delete-btn">Удалить</button>
         `;
-        itemsList.appendChild(li);
+        list.appendChild(li);
     });
 }
 
-// Функция для удаления элемента
+// Удаление элемента
 window.deleteItem = function(id) {
-    console.log("Удаление элемента:", id);
-    
     const transaction = db.transaction(["items"], "readwrite");
-    const objectStore = transaction.objectStore("items");
-    
-    const deleteRequest = objectStore.delete(id);
-    
-    deleteRequest.onsuccess = function() {
-        console.log("Элемент удалён");
+    transaction.objectStore("items").delete(id).onsuccess = function() {
         loadItems();
     };
-    
-    deleteRequest.onerror = function(event) {
-        console.error("Ошибка при удалении:", event.target.error);
-    };
 };
-
-// Функция для защиты от XSS
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
 
 console.log("app.js загружен");
