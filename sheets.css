@@ -1,0 +1,249 @@
+/* Стили для таблицы как в Google Sheets */
+.sheets-container {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+.sheets-toolbar {
+    padding: 10px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.sheets-toolbar button {
+    padding: 8px 16px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #333;
+}
+
+.sheets-toolbar button:hover {
+    background: #e9ecef;
+    border-color: #adb5bd;
+}
+
+.sheets-toolbar button.primary {
+    background: #667eea;
+    color: white;
+    border-color: #5a67d8;
+}
+
+.sheets-toolbar button.primary:hover {
+    background: #5a67d8;
+}
+
+.sheets-table-wrapper {
+    overflow-x: auto;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.sheets-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px;
+}
+
+.sheets-table th {
+    background: #f8f9fa;
+    padding: 12px 8px;
+    font-weight: 600;
+    font-size: 14px;
+    color: #495057;
+    border-bottom: 2px solid #dee2e6;
+    position: sticky;
+    top: 0;
+    background: #f8f9fa;
+    z-index: 10;
+}
+
+.sheets-table td {
+    padding: 10px 8px;
+    border-bottom: 1px solid #e9ecef;
+    font-size: 14px;
+}
+
+.sheets-table tr:hover td {
+    background-color: #f8f9fa;
+}
+
+.sheets-table .editable-cell {
+    cursor: pointer;
+    position: relative;
+}
+
+.sheets-table .editable-cell:hover {
+    background-color: #fff3bf;
+}
+
+.sheets-table .editable-cell input {
+    width: 100%;
+    padding: 6px 8px;
+    border: 2px solid #667eea;
+    border-radius: 4px;
+    font-size: 14px;
+    outline: none;
+    background: white;
+}
+
+.sheets-table .actions-cell {
+    white-space: nowrap;
+    width: 100px;
+}
+
+.sheets-table .actions-cell button {
+    padding: 4px 8px;
+    margin: 0 2px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.sheets-table .edit-btn {
+    background: #ffc107;
+    color: #000;
+}
+
+.sheets-table .delete-btn {
+    background: #dc3545;
+    color: white;
+}
+
+.sheets-table .save-btn {
+    background: #28a745;
+    color: white;
+}
+
+.sheets-table .cancel-btn {
+    background: #6c757d;
+    color: white;
+}
+
+.sheets-footer {
+    padding: 15px;
+    background: #f8f9fa;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    color: #6c757d;
+}
+
+.sheets-footer button {
+    padding: 6px 12px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Модальное окно для добавления строки */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+}
+
+.modal.active {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #333;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #999;
+}
+
+.modal-body {
+    margin-bottom: 20px;
+}
+
+.modal-body .form-group {
+    margin-bottom: 15px;
+}
+
+.modal-body label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #495057;
+}
+
+.modal-body input,
+.modal-body select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #e0e0e0;
+}
+
+/* Адаптация для мобильных */
+@media (max-width: 600px) {
+    .sheets-toolbar {
+        flex-direction: column;
+    }
+    
+    .sheets-toolbar button {
+        width: 100%;
+    }
+    
+    .sheets-table {
+        min-width: 600px;
+    }
+}
