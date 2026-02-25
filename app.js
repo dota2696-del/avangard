@@ -125,7 +125,7 @@ function displayItems(items) {
         const li = document.createElement('li');
         li.innerHTML = `
             <strong>${escapeHtml(item.name)}</strong>: ${escapeHtml(item.value)}
-            <button onclick="deleteItem(${item.id})" class="delete-btn">Удалить</button>
+            <button onclick="window.deleteItem(${item.id})" class="delete-btn">Удалить</button>
         `;
         itemsList.appendChild(li);
     });
