@@ -3,14 +3,12 @@ console.log("auth.js загружается...");
 // Функция инициализации БД
 function initAuthDB() {
     return new Promise((resolve, reject) => {
-        // Используем версию 1, чтобы создать всё с нуля
         const request = indexedDB.open("MyDatabase", 1);
         
         request.onupgradeneeded = function(event) {
             const db = event.target.result;
             console.log("Создание новой базы данных...");
             
-            // Создаем хранилище users
             if (!db.objectStoreNames.contains("users")) {
                 const userStore = db.createObjectStore("users", {
                     keyPath: "id",
@@ -21,7 +19,6 @@ function initAuthDB() {
                 console.log("Хранилище users создано");
             }
             
-            // Создаем хранилище sessions
             if (!db.objectStoreNames.contains("sessions")) {
                 const sessionStore = db.createObjectStore("sessions", {
                     keyPath: "sessionId",
@@ -31,7 +28,6 @@ function initAuthDB() {
                 console.log("Хранилище sessions создано");
             }
             
-            // Создаем хранилище items
             if (!db.objectStoreNames.contains("items")) {
                 const itemsStore = db.createObjectStore("items", {
                     keyPath: "id",
@@ -47,8 +43,7 @@ function initAuthDB() {
         
         request.onsuccess = function(event) {
             const db = event.target.result;
-            console.log("База данных открыта, хранилища:", 
-                Array.from(db.objectStoreNames).join(', '));
+            console.log("База данных открыта");
             resolve(db);
         };
         
@@ -80,29 +75,17 @@ window.registerUser = async function() {
     
     try {
         const db = await initAuthDB();
-        console.log("БД получена, начинаем транзакцию...");
-        
-        // Проверяем наличие хранилища
-        if (!db.objectStoreNames.contains("users")) {
-            console.error("Хранилище users не найдено!");
-            alert("Ошибка инициализации. Обновите страницу.");
-            return;
-        }
         
         const transaction = db.transaction(["users"], "readwrite");
         const userStore = transaction.objectStore("users");
-        
-        // Проверяем существование пользователя
         const usernameIndex = userStore.index("username");
-        const checkRequest = usernameIndex.get(username);
         
-        checkRequest.onsuccess = function() {
-            if (checkRequest.result) {
+        usernameIndex.get(username).onsuccess = function(event) {
+            if (event.target.result) {
                 alert('Пользователь с таким именем уже существует');
                 return;
             }
             
-            // Создаем пользователя
             const user = {
                 username: username,
                 email: email,
@@ -110,17 +93,9 @@ window.registerUser = async function() {
                 timestamp: Date.now()
             };
             
-            const addRequest = userStore.add(user);
-            
-            addRequest.onsuccess = function() {
-                console.log("Пользователь создан");
+            userStore.add(user).onsuccess = function() {
                 alert('Регистрация успешна!');
                 window.location.href = 'login.html';
-            };
-            
-            addRequest.onerror = function(error) {
-                console.error("Ошибка добавления:", error);
-                alert('Ошибка при создании пользователя');
             };
         };
         
@@ -153,7 +128,6 @@ window.loginUser = async function() {
             const user = event.target.result;
             
             if (user && user.password === btoa(password)) {
-                // Создаем сессию
                 const sessionTransaction = db.transaction(["sessions"], "readwrite");
                 const sessionStore = sessionTransaction.objectStore("sessions");
                 
@@ -189,22 +163,20 @@ window.logout = function() {
     window.location.href = 'login.html';
 };
 
-// Проверка авторизации
-window.checkAuth = function() {
-    return localStorage.getItem('currentSession') !== null;
-};
-
-// При загрузке страницы
-document.addEventListener('DOMContentLoaded', function() {
-    console.log("Auth.js: страница загружена");
-    
-    // Проверяем авторизацию на главной
-    const path = window.location.pathname;
-    if (path.endsWith('index.html') || path === '/' || path === '') {
-        if (!window.checkAuth()) {
-            window.location.href = 'login.html';
-        }
+// Функция для просмотра пользователей (для отладки)
+window.showAllUsers = async function() {
+    try {
+        const db = await initAuthDB();
+        const transaction = db.transaction(["users"], "readonly");
+        const store = transaction.objectStore("users");
+        
+        store.getAll().onsuccess = function(event) {
+            console.table(event.target.result);
+            alert(`Пользователей: ${event.target.result.length}`);
+        };
+    } catch (error) {
+        console.error("Ошибка:", error);
     }
-});
+};
 
 console.log("auth.js загружен");
