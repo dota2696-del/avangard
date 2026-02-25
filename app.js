@@ -2,11 +2,12 @@ console.log("app.js загружается...");
 
 let db;
 
-const request = indexedDB.open("MyDatabase", 1);
+// Используем ту же версию 3
+const request = indexedDB.open("MyDatabase", 3);
 
 request.onsuccess = function(event) {
     db = event.target.result;
-    console.log("База данных открыта");
+    console.log("База данных открыта, версия:", db.version);
     
     // Если мы на index.html и есть сессия, загружаем элементы
     if (window.location.pathname.includes('index.html') && 
@@ -87,7 +88,7 @@ function displayItems(items) {
     items.forEach(item => {
         const li = document.createElement('li');
         li.innerHTML = `
-            <strong>${item.name}</strong>: ${item.value}
+            <strong>${escapeHtml(item.name)}</strong>: ${escapeHtml(item.value)}
             <button onclick="deleteItem(${item.id})" class="delete-btn">Удалить</button>
         `;
         list.appendChild(li);
@@ -101,5 +102,12 @@ window.deleteItem = function(id) {
         loadItems();
     };
 };
+
+// Защита от XSS
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
 
 console.log("app.js загружен");
