@@ -3,21 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Моё PWA приложение</title>
+    <title>Google Sheets PWA</title>
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="images/icon-180.png">
     <link rel="icon" href="images/favicon.ico" type="image/x-icon">
     <meta name="theme-color" content="#000000">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="sheets.css">
     
-    <!-- СНАЧАЛА ПРОВЕРЯЕМ АВТОРИЗАЦИЮ -->
     <script>
-        // Этот скрипт выполняется до загрузки страницы
+        // Проверка авторизации
         (function() {
-            console.log("Проверка авторизации...");
             const session = localStorage.getItem('currentSession');
             if (!session) {
-                console.log("Нет сессии, перенаправляем на login.html");
                 window.location.href = 'login.html';
             }
         })();
@@ -25,26 +23,38 @@
 </head>
 <body>
     <div class="container">
+        <!-- Шапка с пользователем -->
         <div class="user-info">
-            <span id="welcomeMessage">Добро пожаловать!</span>
-            <button onclick="logout()" class="logout-btn">Выйти</button>
+            <div class="user-greeting">
+                <span class="welcome-emoji">👋</span>
+                <span id="welcomeMessage">Добро пожаловать!</span>
+            </div>
+            <button onclick="logout()" class="logout-btn">
+                <span>🚪</span> Выйти
+            </button>
         </div>
         
-        <h1>Моё приложение с базой данных</h1>
-        
-        <div class="add-section">
-            <input type="text" id="itemName" placeholder="Введите название">
-            <input type="text" id="itemValue" placeholder="Введите значение">
-            <button onclick="addItem()" class="add-btn">Добавить</button>
+        <!-- Заголовок -->
+        <div class="app-header">
+            <h1>
+                <span class="header-icon">📊</span>
+                Мой Google Sheets
+            </h1>
+            <p class="subtitle">Редактируйте таблицу как в Google Sheets</p>
         </div>
         
-        <div class="items-section">
-            <h2>Сохранённые элементы:</h2>
-            <ul id="itemsList"></ul>
+        <!-- КОНТЕЙНЕР ДЛЯ ТАБЛИЦЫ (старый интерфейс полностью заменен) -->
+        <div id="sheetsContainer"></div>
+        
+        <!-- Подвал -->
+        <div class="app-footer">
+            <p>Данные сохраняются автоматически в вашем браузере</p>
         </div>
     </div>
 
+    <!-- Скрипты -->
     <script src="app.js"></script>
     <script src="auth.js"></script>
+    <script src="sheets.js"></script>
 </body>
 </html>
