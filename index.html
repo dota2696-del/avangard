@@ -11,8 +11,10 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="sheets.css">
     
+    <!-- Подключаем Clipsheet из CDN -->
+    <script src="https://esm.sh/jsr/@katlyn/clipsheet"></script>
+    
     <script>
-        // Проверка авторизации
         (function() {
             const session = localStorage.getItem('currentSession');
             if (!session) {
@@ -23,7 +25,6 @@
 </head>
 <body>
     <div class="container">
-        <!-- Шапка с пользователем -->
         <div class="user-info">
             <div class="user-greeting">
                 <span class="welcome-emoji">👋</span>
@@ -34,27 +35,31 @@
             </button>
         </div>
         
-        <!-- Заголовок -->
         <div class="app-header">
             <h1>
                 <span class="header-icon">📊</span>
                 Мой Google Sheets
             </h1>
-            <p class="subtitle">Редактируйте таблицу как в Google Sheets</p>
+            <p class="subtitle">Импортируйте данные из Google Sheets и редактируйте их</p>
         </div>
         
-        <!-- КОНТЕЙНЕР ДЛЯ ТАБЛИЦЫ (старый интерфейс полностью заменен) -->
+        <!-- Блок для ввода Google Sheets -->
+        <div id="googleSheetsInput" class="google-sheets-section"></div>
+        
+        <!-- Превью данных -->
+        <div id="googleSheetsPreview" class="preview-section"></div>
+        
+        <!-- Контейнер для таблицы -->
         <div id="sheetsContainer"></div>
         
-        <!-- Подвал -->
         <div class="app-footer">
             <p>Данные сохраняются автоматически в вашем браузере</p>
         </div>
     </div>
 
-    <!-- Скрипты -->
     <script src="app.js"></script>
     <script src="auth.js"></script>
     <script src="sheets.js"></script>
+    <script src="google-sheets.js"></script>
 </body>
 </html>
