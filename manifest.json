@@ -1,0 +1,23 @@
+{
+  "name": "Мое приложение с базой данных",
+  "short_name": "МояБД",
+  "description": "Приложение для работы с базой данных на телефоне",
+  "start_url": "/login.html",  // Изменено с "/" на "/login.html"
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "images/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "images/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
